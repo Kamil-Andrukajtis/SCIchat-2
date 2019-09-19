@@ -1,6 +1,12 @@
+pushd P:\
+
 setlocal EnableDelayedExpansion
 set "countmaintainers=findstr /R /N "^^" P:\SCI_CHAT\maintainers.txt | find /C ":""
 set "verifyunique=findstr /R /N "^^" P:\SCI_CHAT\verifyunique.txt | find /C ":""
+
+set "countlowtext=findstr /R /N "^^" P:\SCI_CHAT\lowtext.txt | find /C ":""
+set "countmidtext=findstr /R /N "^^" P:\SCI_CHAT\midtext.txt | find /C ":""
+set "counthightext=findstr /R /N "^^" P:\SCI_CHAT\hightext.txt | find /C ":""
 
 :restart
 
@@ -14,6 +20,11 @@ set IDresetNeedOriginal=10
 set maintainers=1
 set RegisterRoundsOriginal=2
 set first=false
+
+set "min.size=100"
+set lowtext=0
+set midtext=0
+set hightext=0
 
 set TakeOver=%TakeOverOriginal%
 set CurrentMaintainer=Initialized
@@ -30,7 +41,7 @@ set ChatText=text
 :start
 
 if exist P:\SCI_CHAT\maintainers.txt (for /f %%a in ('!countmaintainers!') do set maintainers=%%a)
-set /A CheckDelay=%RANDOM% * 10 / 32768 + 30 + (10 * %maintainers%)
+set /A CheckDelay=%RANDOM% * 10 / 32768 + 30
 
 if exist P:\SCI_CHAT\maintainer.txt ( echo maintainer file exists ) else ( goto NoDoesNot )
 	set /A TakeOver=(%TakeOver%-1)
@@ -49,7 +60,8 @@ if exist P:\SCI_CHAT\maintainer.txt ( echo maintainer file exists ) else ( goto 
 	title Maintainer %MaintainerID% (%TakeOver%/%Broken%/%Alone%/%RegisterRounds%) - maintainers aprox.: %maintainers%
 	set /A RegisterRounds=%RegisterRounds%-1
 	timeout /nobreak %CheckDelay%
-	goto start
+	set ObserveRounds=%maintainers%+1
+	goto observe
 :NoDoesNot
 
 if not exist P:\SCI_CHAT\maintainer.txt ( echo maintainer file doesn't exist ) else (goto YesDoes)
@@ -61,13 +73,18 @@ if not exist P:\SCI_CHAT\maintainer.txt ( echo maintainer file doesn't exist ) e
 
 
 goto start
-
-set ObserveRounds=%ObserveRoundsOriginal%
-
-goto start
+:observe
+if %ObserveRounds% == 0 (goto start)
+set /A ObserveRounds=%ObserveRounds%-1
+if "%CurrentMaintainer%"=="NEWMAINTAINER " (set TakeOver=%TakeOverOriginal%)
+title Maintainer %MaintainerID% Observing(%ObserveRounds%) (%TakeOver%/%Broken%/%Alone%/%RegisterRounds%) - maintainers aprox.: %maintainers%
+timeout /nobreak 10
+if "%CurrentMaintainer%"=="%MaintainerID% " (set TakeOver=%TakeOverOriginal%)
+for /f "delims=" %%x in (P:\SCI_CHAT\maintainer.txt) do set CurrentMaintainer=%%x
+goto observe
 
 :goActive
-set /A TakeOver=100
+set /A TakeOver=50
 :announce
 title Maintainer %MaintainerID% ANNOUNCING SELECTION...%TakeOver%
 echo NEWMAINTAINER > P:\SCI_CHAT\maintainer.txt
@@ -80,12 +97,25 @@ echo %MaintainerID% > P:\SCI_CHAT\maintainer.txt
 if exist P:\SCI_CHAT\maintainers.txt (for /f %%a in ('!countmaintainers!') do set maintainers=%%a)
 title Maintainer %MaintainerID% MAINTAINING %TakeOver% (Stability = %Broken%/%BrokenOriginal%) maintainers aprox.: %maintainers%
 set /A TakeOver=%TakeOver%-1
-if "%TakeOver%"=="0" (set TakeOver=10) else (goto maintain)
+if "%TakeOver%"=="0" (set TakeOver=10)
 if "%TakeOver%"=="10" (goto checkBroken)
 
 
 
+pushd P:\SCI_CHAT\INBOX\
+setlocal
+set "min.size=100"
 
+if not exist P:\SCI_CHAT\INBOX\* (goto maintain)
+for /f  "usebackq delims=;" %%B in (`dir P:\SCI_CHAT\INBOX\ /b /A:-D *.txt`) do If %%~zB GTR %min.size% del "P:\SCI_CHAT\INBOX\%%B"
+type "P:\SCI_CHAT\INBOX\*" >> P:\SCI_CHAT\lowtext.txt
+del /Q "P:\SCI_CHAT\INBOX\*"
+
+if exist P:\SCI_CHAT\lowtext.txt (for /f %%a in ('!countlowtext!') do set lowtext=%%a)
+if %lowtext% GEQ 16 (type P:\SCI_CHAT\midtext.txt > P:\SCI_CHAT\hightext.txt)
+if %lowtext% GEQ 16 (type P:\SCI_CHAT\lowtext.txt > P:\SCI_CHAT\midtext.txt)
+if %lowtext% GEQ 16 (break>P:\SCI_CHAT\lowtext.txt)
+set lowtext=0
 
 
 
@@ -101,3 +131,7 @@ if "%CurrentMaintainer%"=="%MaintainerID% " (set Broken=%BrokenOriginal%) else (
 echo %MaintainerID% > P:\SCI_CHAT\verifyunique.txt
 if %Broken%== 0 (goto restart)
 goto maintain
+
+:moveup
+
+goto moveup
