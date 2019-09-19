@@ -1,0 +1,4 @@
+odpal maintainer, reader i sender
+maintainer nie jest potrzebny do pisania ale przynajmniej jedna osoba musi mieæ odpalonego maintainera aby czat dzia³a³
+reader pobiera i wyœwietla czat
+sender wysy³a wiadomoœci do czatu

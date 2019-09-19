@@ -2,7 +2,8 @@
 set /p Username=Nazwa uzytkownika:
 set Username=%RANDOM%%Username%
 echo twoja nazwa to %Username%
-echo Wiadomosci przekraczajace 100 znakow nie zostano przyjete
+echo Wiadomosci przekraczające 120 znakow nie zostaną przyjete
+title SCIchat2 Sender - %Username%
 :pismo
 set /p Wiadomosc=%Username%:
 set Wiadomosc=%Username%: %Wiadomosc%

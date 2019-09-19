@@ -1,4 +1,5 @@
 @echo off
+title SCIchat2 Reader
 :start
 cls
 if exist P:\SCI_CHAT\hightext.txt (type P:\SCI_CHAT\hightext.txt)

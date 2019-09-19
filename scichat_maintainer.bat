@@ -11,7 +11,7 @@ set "counthightext=findstr /R /N "^^" P:\SCI_CHAT\hightext.txt | find /C ":""
 :restart
 
 set MaintainerID=%RANDOM%
-set TakeOverOriginal=3
+set TakeOverOriginal=4
 set BrokenOriginal=5
 set AloneOriginal=2
 set DelayBonusOriginal=1
@@ -20,8 +20,9 @@ set IDresetNeedOriginal=10
 set maintainers=1
 set RegisterRoundsOriginal=2
 set first=false
+set UnoriginalOriginal=10
 
-set "min.size=100"
+set "min.size=120"
 set lowtext=0
 set midtext=0
 set hightext=0
@@ -37,11 +38,14 @@ set IDresetNeed=%IDresetNeedOriginal%
 set RegisterRounds=%RegisterRoundsOriginal%
 set unique=init
 set ChatText=text
+set Unoriginal=%UnoriginalOriginal%
 
 :start
 
 if exist P:\SCI_CHAT\maintainers.txt (for /f %%a in ('!countmaintainers!') do set maintainers=%%a)
-set /A CheckDelay=%RANDOM% * 10 / 32768 + 30
+set /A CheckDelay=%RANDOM% * 10 / 32768 + 10
+
+	if not exist P:\SCI_CHAT\INBOX ( mkdir P:\SCI_CHAT\INBOX\ )
 
 if exist P:\SCI_CHAT\maintainer.txt ( echo maintainer file exists ) else ( goto NoDoesNot )
 	set /A TakeOver=(%TakeOver%-1)
@@ -56,11 +60,11 @@ if exist P:\SCI_CHAT\maintainer.txt ( echo maintainer file exists ) else ( goto 
 	if %Alone% == 0 ( goto goActive )
 	if %RegisterRounds% == 2 (echo %MaintainerID% >> P:\SCI_CHAT\maintainers.txt)
 	if %RegisterRounds% == 0 (echo > P:\SCI_CHAT\maintainers.txt)
-	if %RegisterRounds% == 0 (set /A RegisterRounds=%RegisterRoundsOriginal%)
-	title Maintainer %MaintainerID% (%TakeOver%/%Broken%/%Alone%/%RegisterRounds%) - maintainers aprox.: %maintainers%
+	if %RegisterRounds% == 0 (set /A RegisterRounds=%RegisterRoundsOriginal%+1)
+	title Maintainer %MaintainerID% (%TakeOver%/%Broken%/%Alone%/%RegisterRounds%/%Unoriginal%) - maintainers aprox.: %maintainers%
 	set /A RegisterRounds=%RegisterRounds%-1
 	timeout /nobreak %CheckDelay%
-	set ObserveRounds=%maintainers%+1
+	set /A ObserveRounds=(%maintainers%*2)
 	goto observe
 :NoDoesNot
 
@@ -77,22 +81,28 @@ goto start
 if %ObserveRounds% == 0 (goto start)
 set /A ObserveRounds=%ObserveRounds%-1
 if "%CurrentMaintainer%"=="NEWMAINTAINER " (set TakeOver=%TakeOverOriginal%)
-title Maintainer %MaintainerID% Observing(%ObserveRounds%) (%TakeOver%/%Broken%/%Alone%/%RegisterRounds%) - maintainers aprox.: %maintainers%
+title Maintainer %MaintainerID% Observing(%ObserveRounds%) (%TakeOver%/%Broken%/%Alone%/%RegisterRounds%/%Unoriginal%) - maintainers aprox.: %maintainers%
 timeout /nobreak 10
-if "%CurrentMaintainer%"=="%MaintainerID% " (set TakeOver=%TakeOverOriginal%)
-for /f "delims=" %%x in (P:\SCI_CHAT\maintainer.txt) do set CurrentMaintainer=%%x
+if %ObserveRounds% LSS %maintainers% ( if "%CurrentMaintainer%"=="%MaintainerID% " (set /A Unoriginal=%Unoriginal%-1) )
+if %Unoriginal% == 0 ( set MaintainerID=%RANDOM% )
+if %Unoriginal% == 0 ( set Unoriginal=%UnoriginalOriginal% )
+if exist P:\SCI_CHAT\maintainer.txt (for /f "delims=" %%x in (P:\SCI_CHAT\maintainer.txt) do set CurrentMaintainer=%%x)
 goto observe
 
 :goActive
-set /A TakeOver=50
+set /A TakeOver=30
+echo "New maintainer (%MaintainerID%) found, wait 30s for confirmation" >> P:\SCI_CHAT\lowtext.txt
 :announce
 title Maintainer %MaintainerID% ANNOUNCING SELECTION...%TakeOver%
 echo NEWMAINTAINER > P:\SCI_CHAT\maintainer.txt
 timeout /nobreak 1
 set /A TakeOver=%TakeOver%-1
 if "%TakeOver%"=="0" (set TakeOver=10) else ( goto announce )
+echo "Maintainer %MaintainerID% is maintaining chat now" >> P:\SCI_CHAT\lowtext.txt
 :maintain
 timeout /nobreak 2
+if not exist P:\SCI_CHAT\ ( mkdir P:\SCI_CHAT\ )
+if not exist P:\SCI_CHAT\INBOX ( mkdir P:\SCI_CHAT\INBOX )
 echo %MaintainerID% > P:\SCI_CHAT\maintainer.txt
 if exist P:\SCI_CHAT\maintainers.txt (for /f %%a in ('!countmaintainers!') do set maintainers=%%a)
 title Maintainer %MaintainerID% MAINTAINING %TakeOver% (Stability = %Broken%/%BrokenOriginal%) maintainers aprox.: %maintainers%
@@ -123,12 +133,15 @@ goto maintain
 
 :checkBroken
 if exist P:\SCI_CHAT\verifyunique.txt (for /f %%a in ('!verifyunique!') do set unique=%%a)
-if %unique% == 1 (echo %MaintainerID% >> P:\SCI_CHAT\verifyunique.txt ) else (set /A Broken=%Broken%-1)
-echo %uniue%
+if %unique% == 1 (echo ok) else (set /A Broken=%Broken%-1)
+break>P:\SCI_CHAT\verifyunique.txt
+echo %MaintainerID% >> P:\SCI_CHAT\verifyunique.txt
 timeout /nobreak 5
 for /f "delims=" %%x in (P:\SCI_CHAT\maintainer.txt) do set CurrentMaintainer=%%x
-if "%CurrentMaintainer%"=="%MaintainerID% " (set Broken=%BrokenOriginal%) else (set /A Broken=%Broken%-1)
-echo %MaintainerID% > P:\SCI_CHAT\verifyunique.txt
+if "%CurrentMaintainer%"=="NEWMAINTAINER " (set Broken=0)
+if %Broken% == 2 (echo "!Maintainer %MaintainerID% unstable" >> P:\SCI_CHAT\lowtext.txt)
+if %Broken% == 0 (echo "Maintainer %MaintainerID% failed" >> P:\SCI_CHAT\lowtext.txt)
+if %Broken% == 0 (set MaintainerID=%RANDOM%d)
 if %Broken%== 0 (goto restart)
 goto maintain
 
