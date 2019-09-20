@@ -1,3 +1,4 @@
+mode con: cols=120 lines=2
 pushd P:\
 
 setlocal EnableDelayedExpansion
@@ -44,7 +45,7 @@ set ChatText=text
 set Unoriginal=%UnoriginalOriginal%
 set RandomRegister=-1
 set failboost=0
-
+set VerifiedMaintainer=iinii
 :start
 
 if exist P:\SCI_CHAT\maintainers.txt (for /f %%a in ('!countmaintainers!') do set maintainers=%%a)
@@ -62,10 +63,10 @@ if exist P:\SCI_CHAT\maintainer.txt ( echo maintainer file exists ) else ( goto 
 	if "%CurrentMaintainer%"=="NEWMAINTAINER " (set TakeOver=%TakeOverOriginal%) else (echo %MaintainerID% > P:\SCI_CHAT\maintainer.txt)
 	if "%CurrentMaintainer%"=="NEWMAINTAINER " (set /A Broken=%Broken%-1) else (set Broken=%BrokenOriginal%)
 	if "%CurrentMaintainer%"=="Foff " (set /A Broken=%Broken%-1) else (set Broken=%BrokenOriginal%)
-	if %Broken%== 0 (echo FAIL > P:\SCI_CHAT\maintainer.txt)
-	if %Broken%== 0 (set Broken=%BrokenOriginal%)
-	if %TakeOver% == 0 ( goto goActive )
-	if %Alone% == 0 ( goto goActive )
+	if "%CurrentMaintainer%"=="FAIL " (set Broken=%BrokenOriginal%)
+	if %Broken% LSS 1 (set Broken=%BrokenOriginal%)
+	if %TakeOver% LSS 1 ( goto goActive )
+	if %Alone% LSS 1 ( goto goActive )
 	if %RandomRegister% == 1 (echo count again> P:\SCI_CHAT\maintainers.txt)
 	if not exist P:\SCI_CHAT\maintainers.txt (echo count again>P:\SCI_CHAT\maintainers.txt)
 	title Maintainer %MaintainerID% (%TakeOver%/%Broken%/%Alone%/%RegisterRounds%/%Unoriginal%/%failboost%) - maintainers aprox.: %maintainers%
@@ -94,16 +95,23 @@ if %failboost% GEQ 1 (set /A ObserveRounds=%ObserveRounds% / 2)
 if %ObserveRounds% LSS 1 (goto start)
 set /A ObserveRounds=%ObserveRounds%-1
 if "%CurrentMaintainer%"=="NEWMAINTAINER " (set TakeOver=%TakeOverOriginal%)
+if "%CurrentMaintainer%"=="NEWMAINTAINER " (set Broken=%BrokenOriginal%)
+if "%CurrentMaintainer%"=="NEWMAINTAINER " (set /A failboost=0)
+if "%CurrentMaintainer%"=="FIX " (set Broken=%BrokenOriginal%)
+if "%CurrentMaintainer%"=="FAIL " (set Broken=%BrokenOriginal%)
 if "%CurrentMaintainer%"=="FAIL " (set /A failboost=3)
-if "%CurrentMaintainer%"=="FAIL " (echo %MaintainerID% > P:\SCI_CHAT\maintainer.txt)
+if "%CurrentMaintainer%"=="FAIL " (echo FIX > P:\SCI_CHAT\maintainer.txt)
 title Maintainer %MaintainerID% Observing(%ObserveRounds%) (%TakeOver%/%Broken%/%Alone%/%RegisterRounds%/%Unoriginal%/%failboost%) - maintainers aprox.: %maintainers%
 timeout /nobreak 10
 if %ObserveRounds% LSS %OriginalRounds% ( if "%CurrentMaintainer%"=="%MaintainerID% " (set /A Unoriginal=%Unoriginal%-1) )
 if %Unoriginal% == 0 ( set MaintainerID=D%RANDOM% )
 if %Unoriginal% == 0 ( set Unoriginal=%UnoriginalOriginal% )
 if exist P:\SCI_CHAT\maintainer.txt (for /f "delims=" %%x in (P:\SCI_CHAT\maintainer.txt) do set CurrentMaintainer=%%x)
+if exist P:\SCI_CHAT\verifyunique.txt (for /f "delims=" %%x in (P:\SCI_CHAT\verifyunique.txt) do set VerifiedMaintainer=%%x)
 if exist P:\SCI_CHAT\maintainers.txt (for /f %%a in ('!countmaintainers!') do set maintainers=%%a)
 if %maintainers% == 1 (set RegisterRounds=1)
+if "%CurrentMaintainer%"=="%VerifiedMaintainer%" (set /A Broken=%BrokenOriginal%) else (set /A Broken=%Broken%-1)
+if %Broken% == 0 (echo FAIL > P:\SCI_CHAT\maintainer.txt)
 goto observe
 
 :goActive
