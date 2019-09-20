@@ -1,5 +1,6 @@
 @echo off
 title SCIchat2 Reader
+mode con: cols=120 lines=39
 :start
 cls
 if exist P:\SCI_CHAT\hightext.txt (type P:\SCI_CHAT\hightext.txt)

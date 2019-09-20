@@ -1,4 +1,7 @@
 odpal maintainer, reader i sender
-maintainer nie jest potrzebny do pisania ale przynajmniej jedna osoba musi mieæ odpalonego maintainera aby czat dzia³a³
+
 reader pobiera i wyœwietla czat
 sender wysy³a wiadomoœci do czatu
+
+maintainer nie jest potrzebny do pisania ale przynajmniej jedna osoba musi mieæ odpalonego maintainera aby czat dzia³a³, ten program decyduje które wiadomoœci dodaæ do czatu a które s¹ za d³ugie (ponad 120 znaków w³¹cznie z nazw¹ u¿ytkownika)
+zawsze czatem bêdzie siê zajmowaæ tylko jeden maintainer, jeœli odpalone jest kilka i ten który zajmuje siê czatem zostanie wy³¹czony to inny zostanie wybrany i zacznie zajmowaæ siê czatem (im wiêcej jest ich odpalonych tym d³u¿ej zajmie wybieranie nowego maintainera)
