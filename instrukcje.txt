@@ -1,4 +1,6 @@
-tl;dr odpal maintainer, reader i sender
+odpal start_scichat.bat
+
+start_scichat.bat odpali scichat_reader.bat, scichat_sender.bat i scichat_maintainer.bat
 
 reader pobiera i wyœwietla czat
 sender wysy³a wiadomoœci do czatu
