@@ -138,6 +138,7 @@ echo "Maintainer %MaintainerID% is maintaining chat now" >> P:\SCI_CHAT\lowtext.
 timeout /nobreak 2
 if not exist P:\SCI_CHAT\ ( mkdir P:\SCI_CHAT\ )
 if not exist P:\SCI_CHAT\INBOX ( mkdir P:\SCI_CHAT\INBOX )
+if not exist P:\SCI_CHAT\PROCESS%MaintainerID% ( mkdir P:\SCI_CHAT\PROCESS%MaintainerID% )
 echo %MaintainerID% > P:\SCI_CHAT\maintainer.txt
 if exist P:\SCI_CHAT\maintainers.txt (for /f %%a in ('!countmaintainers!') do set maintainers=%%a)
 title Maintainer %MaintainerID% MAINTAINING %TakeOver% (Stability = %Broken%/10) maintainers aprox.: %maintainers% reregister: %RegisterRounds%
@@ -148,12 +149,13 @@ if "%TakeOver%"=="10" (goto checkBroken)
 
 
 
-pushd P:\SCI_CHAT\INBOX\
+pushd P:\SCI_CHAT\PROCESS%MaintainerID%\
 
 if not exist P:\SCI_CHAT\INBOX\* (goto maintain)
-for /f  "usebackq delims=;" %%B in (`dir P:\SCI_CHAT\INBOX\ /b /A:-D *.txt`) do If %%~zB GTR %min.size% del "P:\SCI_CHAT\INBOX\%%B"
-type "P:\SCI_CHAT\INBOX\*" >> P:\SCI_CHAT\lowtext.txt
-del /Q "P:\SCI_CHAT\INBOX\*"
+move "P:\SCI_CHAT\INBOX\*" "P:\SCI_CHAT\PROCESS%MaintainerID%\"
+for /f  "usebackq delims=;" %%B in (`dir P:\SCI_CHAT\PROCESS%MaintainerID%\ /b /A:-D *.txt`) do If %%~zB GTR %min.size% del "P:\SCI_CHAT\PROCESS%MaintainerID%\%%B"
+type "P:\SCI_CHAT\PROCESS%MaintainerID%\*" >> P:\SCI_CHAT\lowtext.txt
+del /Q "P:\SCI_CHAT\PROCESS%MaintainerID%\*"
 
 if exist P:\SCI_CHAT\lowtext.txt (for /f %%a in ('!countlowtext!') do set lowtext=%%a)
 if %lowtext% GEQ 12 (type P:\SCI_CHAT\midtext.txt > P:\SCI_CHAT\hightext.txt)
