@@ -64,6 +64,8 @@ if exist P:\SCI_CHAT\maintainer.png ( echo maintainer file exists ) else ( goto 
 	if "%CurrentMaintainer%"=="NEWMAINTAINER " (set /A Broken=%Broken%-1) else (set Broken=%BrokenOriginal%)
 	if "%CurrentMaintainer%"=="Foff " (set /A Broken=%Broken%-1) else (set Broken=%BrokenOriginal%)
 	if "%CurrentMaintainer%"=="FAIL " (set Broken=%BrokenOriginal%)
+	if "%CurrentMaintainer%"=="FIX " (set Broken=%BrokenOriginal%)
+	if "%CurrentMaintainer%"=="FIX " (echo %MaintainerID% > P:\SCI_CHAT\maintainer.png)
 	if %Broken% LSS 1 (set Broken=%BrokenOriginal%)
 	if %TakeOver% LSS 1 ( goto goActive )
 	if %Alone% LSS 1 ( goto goActive )
@@ -95,7 +97,7 @@ if %failboost% GEQ 1 (set /A ObserveRounds=%ObserveRounds% / 2)
 if %ObserveRounds% LSS 1 (goto start)
 set /A ObserveRounds=%ObserveRounds%-1
 if "%CurrentMaintainer%"=="NEWMAINTAINER " (set TakeOver=%TakeOverOriginal%)
-if "%CurrentMaintainer%"=="NEWMAINTAINER " (set Broken=%BrokenOriginal%)
+if "%CurrentMaintainer%"=="NEWMAINTAINER " (set /A Broken=%Broken% - 1)
 if "%CurrentMaintainer%"=="NEWMAINTAINER " (set /A failboost=0)
 if "%CurrentMaintainer%"=="FIX " (set Broken=%BrokenOriginal%)
 if "%CurrentMaintainer%"=="FAIL " (set Broken=%BrokenOriginal%)
@@ -104,14 +106,14 @@ if "%CurrentMaintainer%"=="FAIL " (echo FIX > P:\SCI_CHAT\maintainer.png)
 title Maintainer %MaintainerID% Observing(%ObserveRounds%) (%TakeOver%/%Broken%/%Alone%/%RegisterRounds%/%Unoriginal%/%failboost%) - maintainers aprox.: %maintainers%
 timeout /nobreak 10
 if %ObserveRounds% LSS %OriginalRounds% ( if "%CurrentMaintainer%"=="%MaintainerID% " (set /A Unoriginal=%Unoriginal%-1) )
-if %Unoriginal% == 0 ( set MaintainerID=D%MaintainerID% )
-if %Unoriginal% == 0 ( set Unoriginal=%UnoriginalOriginal% )
+if %Unoriginal% LEQ 0 ( set MaintainerID=D%MaintainerID% )
+if %Unoriginal% LEQ 0 ( set Unoriginal=%UnoriginalOriginal% )
 if exist P:\SCI_CHAT\maintainer.png (for /f "delims=" %%x in (P:\SCI_CHAT\maintainer.png) do set CurrentMaintainer=%%x)
 if exist P:\SCI_CHAT\verifyunique.png (for /f "delims=" %%x in (P:\SCI_CHAT\verifyunique.png) do set VerifiedMaintainer=%%x)
 if exist P:\SCI_CHAT\maintainers.png (for /f %%a in ('!countmaintainers!') do set maintainers=%%a)
 if %maintainers% == 1 (set RegisterRounds=1)
 if "%CurrentMaintainer%"=="%VerifiedMaintainer%" (set /A Broken=%BrokenOriginal%) else (set /A Broken=%Broken%-1)
-if %Broken% == 0 (echo FAIL > P:\SCI_CHAT\maintainer.png)
+if %Broken% LSS 1 (echo FAIL > P:\SCI_CHAT\maintainer.png)
 goto observe
 
 :goActive
@@ -134,11 +136,12 @@ if "%CurrentMaintainer%"=="Foff " (goto restart)
 set /A TakeOver=%TakeOver%-1
 if "%TakeOver%"=="0" (set TakeOver=10) else ( goto announce )
 echo "Maintainer %MaintainerID% is maintaining chat now" >> P:\SCI_CHAT\lowtext.png
+rmdir /Q /S "P:\SCI_CHAT\MAINTAINERSDATA"
 :maintain
 timeout /nobreak 2
 if not exist P:\SCI_CHAT\ ( mkdir P:\SCI_CHAT\ )
 if not exist P:\SCI_CHAT\INBOX ( mkdir P:\SCI_CHAT\INBOX )
-if not exist P:\SCI_CHAT\PROCESS%MaintainerID% ( mkdir P:\SCI_CHAT\PROCESS%MaintainerID% )
+if not exist P:\SCI_CHAT\MAINTAINERSDATA\PROCESS_%MaintainerID% ( mkdir P:\SCI_CHAT\MAINTAINERSDATA\PROCESS_%MaintainerID% )
 echo %MaintainerID% > P:\SCI_CHAT\maintainer.png
 if exist P:\SCI_CHAT\maintainers.png (for /f %%a in ('!countmaintainers!') do set maintainers=%%a)
 title Maintainer %MaintainerID% MAINTAINING %TakeOver% (Stability = %Broken%/10) maintainers aprox.: %maintainers% reregister: %RegisterRounds%
@@ -149,13 +152,13 @@ if "%TakeOver%"=="10" (goto checkBroken)
 
 
 
-pushd P:\SCI_CHAT\PROCESS%MaintainerID%\
+pushd P:\SCI_CHAT\MAINTAINERSDATA\PROCESS_%MaintainerID%\
 
 if not exist P:\SCI_CHAT\INBOX\* (goto maintain)
-move "P:\SCI_CHAT\INBOX\*" "P:\SCI_CHAT\PROCESS%MaintainerID%\"
-for /f  "usebackq delims=;" %%B in (`dir P:\SCI_CHAT\PROCESS%MaintainerID%\ /b /A:-D *.png`) do If %%~zB GTR %min.size% del "P:\SCI_CHAT\PROCESS%MaintainerID%\%%B"
-type "P:\SCI_CHAT\PROCESS%MaintainerID%\*" >> P:\SCI_CHAT\lowtext.png
-del /Q "P:\SCI_CHAT\PROCESS%MaintainerID%\*"
+move "P:\SCI_CHAT\INBOX\*" "P:\SCI_CHAT\MAINTAINERSDATA\PROCESS_%MaintainerID%\"
+for /f  "usebackq delims=;" %%B in (`dir P:\SCI_CHAT\MAINTAINERSDATA\PROCESS_%MaintainerID%\ /b /A:-D *.png`) do If %%~zB GTR %min.size% del "P:\SCI_CHAT\MAINTAINERSDATA\PROCESS_%MaintainerID%\%%B"
+type "P:\SCI_CHAT\MAINTAINERSDATA\PROCESS_%MaintainerID%\*" >> P:\SCI_CHAT\lowtext.png
+del /Q "P:\SCI_CHAT\MAINTAINERSDATA\PROCESS_%MaintainerID%\*"
 
 if exist P:\SCI_CHAT\lowtext.png (for /f %%a in ('!countlowtext!') do set lowtext=%%a)
 if %lowtext% GEQ 12 (type P:\SCI_CHAT\midtext.png > P:\SCI_CHAT\hightext.png)
@@ -172,7 +175,9 @@ goto maintain
 :checkBroken
 if %Broken% LSS 10 (set /A Broken=%Broken% + 1)
 if exist P:\SCI_CHAT\verifyunique.png (for /f %%a in ('!verifyunique!') do set unique=%%a)
-if %unique% == 1 (echo ok) else (set /A Broken=%Broken%-3)
+if exist P:\SCI_CHAT\verifyunique.png (for /f "delims=" %%x in (P:\SCI_CHAT\verifyunique.png) do set VerifiedMaintainer=%%x)
+if %unique% == 1 (echo ok) else (set /A Broken=%Broken%-2)
+if "%VerifiedMaintainer%"=="%MaintainerID% " (echo ok) else (set /A Broken=%Broken%-2)
 break>P:\SCI_CHAT\verifyunique.png
 for /f "delims=" %%x in (P:\SCI_CHAT\maintainer.png) do set CurrentMaintainer=%%x
 if "%CurrentMaintainer%"=="NEWMAINTAINER " (goto deffendstart)
