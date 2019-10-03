@@ -1,8 +1,9 @@
 odpal start_scichat.bat
+ustawienie czatu zajmie okoÅ‚o 3 minuty
 
 start_scichat.bat odpali scichat_reader.bat, scichat_sender.bat i scichat_maintainer.bat
 
-reader pobiera i wyœwietla czat
-sender wysy³a wiadomoœci do czatu
+reader pobiera i wyÅ›wietla czat
+sender wysyÅ‚a wiadomoÅ›ci do czatu
 
-maintainer nie jest potrzebny do pisania ale przynajmniej jedna osoba musi mieæ odpalonego maintainera aby czat dzia³a³, ten program decyduje które wiadomoœci dodaæ do czatu a które s¹ za d³ugie (ponad 120 znaków w³¹cznie z nazw¹ u¿ytkownika)
+maintainer nie jest potrzebny do pisania ale przynajmniej jedna osoba musi mieÄ‡ odpalonego maintainera aby czat dziaÅ‚aÅ‚, ten program decyduje ktÃ³re wiadomoÅ›ci dodaÄ‡ do czatu a ktÃ³re sÄ… za dÅ‚ugie (ponad 120 znakÃ³w wÅ‚Ä…cznie z nazwÄ… uÅ¼ytkownika)
