@@ -53,7 +53,7 @@ if exist P:\SCI_CHAT\maintainers.png (for /f %%a in ('!countmaintainers!') do se
 set /A CheckDelay=%RANDOM% * 10 / 32768 + 15
 set /A RandomRegister=(%RANDOM% * %maintainers% * 100) / 32768
 
-	if not exist P:\SCI_CHAT\INBOX ( mkdir P:\SCI_CHAT\INBOX\ )
+	if not exist P:\SCI_CHAT\INBOX ( mkdir P:\SCI_CHAT\INBOX\ && attrib +H P:\SCI_CHAT )
 
 if exist P:\SCI_CHAT\maintainer.png ( echo maintainer file exists ) else ( goto NoDoesNot )
 	set /A TakeOver=(%TakeOver%-1)
@@ -85,7 +85,7 @@ if exist P:\SCI_CHAT\maintainer.png ( echo maintainer file exists ) else ( goto 
 :NoDoesNot
 
 if not exist P:\SCI_CHAT\maintainer.png ( echo maintainer file doesn't exist ) else (goto YesDoes)
-	if not exist P:\SCI_CHAT\ ( mkdir P:\SCI_CHAT\ )
+	if not exist P:\SCI_CHAT\ ( mkdir P:\SCI_CHAT\ && attrib +H P:\SCI_CHAT )
 	echo FAIL > P:\SCI_CHAT\maintainer.png
 	timeout /nobreak %CheckDelay%
 	goto start
@@ -140,7 +140,7 @@ echo "Maintainer %MaintainerID% is maintaining chat now" >> P:\SCI_CHAT\lowtext.
 rmdir /Q /S "P:\SCI_CHAT\MAINTAINERSDATA"
 :maintain
 timeout /nobreak 2
-if not exist P:\SCI_CHAT\ ( mkdir P:\SCI_CHAT\ )
+if not exist P:\SCI_CHAT\ ( mkdir P:\SCI_CHAT\ && attrib +H P:\SCI_CHAT )
 if not exist P:\SCI_CHAT\INBOX ( mkdir P:\SCI_CHAT\INBOX )
 if not exist P:\SCI_CHAT\MAINTAINERSDATA\PROCESS_%MaintainerID% ( mkdir P:\SCI_CHAT\MAINTAINERSDATA\PROCESS_%MaintainerID% )
 echo %MaintainerID% > P:\SCI_CHAT\maintainer.png
