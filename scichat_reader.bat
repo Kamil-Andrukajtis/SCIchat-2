@@ -1,6 +1,5 @@
 @echo off
 title SCIchat2 Reader
-mode con: cols=120 lines=40
 :start
 cls
 if exist P:\SCI_CHAT\hightext.png (type P:\SCI_CHAT\hightext.png)

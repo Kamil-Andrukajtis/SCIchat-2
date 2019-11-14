@@ -1,5 +1,4 @@
 @echo off
-mode con: cols=120 lines=4
 title SCIchat2 Sender
 set Username=%USERNAME%
 echo twoja nazwa to %Username%
