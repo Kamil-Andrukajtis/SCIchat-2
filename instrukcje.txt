@@ -1,7 +1,9 @@
 odpal start_scichat.bat
 ustawienie czatu mo¿e zaj¹æ oko³o 3 minuty
 
-start_scichat.bat odpali scichat_reader.bat, scichat_sender.bat i scichat_maintainer.bat i zainstaluje maintainer w autostarcie
+start_scichat.bat odpali scichat_reader.bat, scichat_sender.bat i scichat_maintainer.bat
+
+mo¿esz zainstalowaæ scichat_maintainer.bat w autostarcie aby pomagaæ w utrzymywaniu czatu przy dzia³aniu 
 aby odinstalowaæ maintainer uruchom uninstall_scichat_maintainer.bat
 
 reader pobiera i wyœwietla czat
